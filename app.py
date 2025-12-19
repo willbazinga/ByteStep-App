@@ -1,41 +1,69 @@
 import streamlit as st
 import requests
-import json
 import time
 from datetime import datetime
 
-# --- 核心修改：增加时间戳防止缓存 ---
-# 请手动确认这个 URL 在浏览器能打开并看到 JSON 内容
-GITHUB_ID = "willbazinga" # 如果你的 ID 不对，请在这里修改
-REPO_NAME = "ByteStep-App" # 如果仓库名不对，请在这里修改
-
+# 配置与路径
+GITHUB_ID = "willbazinga"
+REPO_NAME = "ByteStep-App"
 RAW_URL = f"https://raw.githubusercontent.com/{GITHUB_ID}/{REPO_NAME}/main/data/lessons.json?t={int(time.time())}"
 
-st.set_page_config(page_title="ByteStep AI", page_icon="🚀")
+st.set_page_config(page_title="ByteStep Pro", page_icon="🚀")
 
-@st.cache_data(ttl=60) # 将缓存缩短到 1 分钟
-def load_data():
-    try:
-        # 打印一下正在尝试访问的 URL 到控制台，方便排查
-        response = requests.get(RAW_URL, timeout=5)
-        if response.status_code == 200:
-            return response.json()
-    except Exception as e:
-        st.error(f"Sync Error: {e}")
-    return [{"word": "Syncing...", "tag": "System", "def": "Waiting for GitHub data...", "example": "Please wait.", "quiz": ""}]
-
-# --- 以下 UI 逻辑保持不变 ---
-data = load_data()
-today_idx = datetime.now().day % len(data)
-item = data[today_idx]
-
-st.markdown(f"""
-<div style="background: white; padding: 25px; border-radius: 20px; border-bottom: 6px solid #0052cc;">
-    <div style="color: #0052cc; font-weight: bold;">● {item.get('tag', 'BytePlus')}</div>
-    <div style="font-size: 30px; font-weight: 800; margin: 10px 0;">{item['word']}</div>
-    <p style="color: #475569;">{item['def']}</p>
-</div>
+# 移动端精致样式
+st.markdown("""
+    <style>
+    .section-card { background: white; padding: 20px; border-radius: 15px; margin-bottom: 15px; border-left: 5px solid #0052cc; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .word-title { font-size: 20px; font-weight: 800; color: #1E293B; }
+    .tech-title { color: #0052cc; font-size: 24px; font-weight: 800; }
+    </style>
 """, unsafe_allow_html=True)
 
-if st.button("Check Connectivity"):
-    st.write(f"Current Target URL: {RAW_URL}")
+@st.cache_data(ttl=60)
+def load_enhanced_data():
+    try:
+        r = requests.get(RAW_URL, timeout=5)
+        if r.status_code == 200: return r.json()
+    except: pass
+    return None # 这里可以加一个更复杂的保底逻辑
+
+data_list = load_enhanced_data()
+
+if data_list:
+    # 始终取最新的一组内容
+    today_data = data_list[-1] 
+    
+    st.title("🚀 ByteStep Pro")
+    st.caption(f"Willbazinga's Daily Tech Intake | {datetime.now().strftime('%Y-%m-%d')}")
+
+    # 使用 Tabs 标签页适配手机底部或顶部切换
+    tab1, tab2, tab3 = st.tabs(["🔤 Vocabulary", "📝 Grammar", "💻 Tech"])
+
+    with tab1:
+        st.subheader("5 Daily Terms")
+        for v in today_data['vocabulary']:
+            st.markdown(f"""<div class="section-card">
+                <div class="word-title">{v['word']}</div>
+                <div style="color:#475569;">{v['def']}</div>
+            </div>""", unsafe_allow_html=True)
+
+    with tab2:
+        st.subheader("2 Grammar Points")
+        for g in today_data['grammar']:
+            st.markdown(f"""<div class="section-card">
+                <div style="font-weight:bold; color:#0052cc;">{g['rule']}</div>
+                <div style="margin-top:5px;">{g['note']}</div>
+            </div>""", unsafe_allow_html=True)
+
+    with tab3:
+        st.subheader("Tech Spotlight")
+        t = today_data['tech_spotlight']
+        st.markdown(f"""<div class="section-card" style="border-left-color:#f97316;">
+            <div class="tech-title">{t['title']}</div>
+            <p style="margin-top:10px; line-height:1.6;">{t['detail']}</p>
+        </div>""", unsafe_allow_html=True)
+        if st.button("✅ Mark as Read"):
+            st.balloons()
+            st.success("Great job today!")
+else:
+    st.error("Data sync in progress... Please check GitHub Actions.")
