@@ -1,114 +1,80 @@
 import streamlit as st
+import requests
 import json
-import os
 from datetime import datetime
 
-# --- 1. 界面配置：打造原生 App 感官 ---
-st.set_page_config(page_title="ByteStep Tech English", page_icon="🚀", layout="centered")
+# --- 1. 基础配置与 GitHub 路径 ---
+# 请确保下面的 URL 中 'willbazinga' 是你的正确 ID
+GITHUB_RAW_URL = "https://raw.githubusercontent.com/willbazinga/ByteStep-App/main/data/lessons.json"
 
+st.set_page_config(page_title="ByteStep AI", page_icon="🚀")
+
+# --- 2. 增强型移动端样式 ---
 st.markdown("""
     <style>
-    /* 全局背景与字体 */
-    .stApp { background-color: #F8FAFC; }
-    
-    /* 移动端卡片容器 */
-    .tech-card {
-        background: white;
-        padding: 24px;
-        border-radius: 24px;
-        border-bottom: 6px solid #0052cc;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        margin-bottom: 20px;
+    [data-testid="stAppViewContainer"] { background-color: #F8FAFC; }
+    .main-card {
+        background: white; padding: 25px; border-radius: 24px;
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        border-bottom: 6px solid #0052cc; margin-top: 10px;
     }
-    
-    /* 标题与文字样式 */
-    .category-tag {
-        color: #0052cc;
-        font-weight: 600;
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-    .main-word {
-        font-size: 32px;
-        font-weight: 800;
-        color: #1E293B;
-        margin: 10px 0;
-    }
-    .definition {
-        font-size: 16px;
-        color: #475569;
-        line-height: 1.6;
-    }
+    .tag { color: #0052cc; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+    .word { font-size: 32px; font-weight: 800; color: #1E293B; margin: 8px 0; }
+    .def { font-size: 16px; color: #475569; line-height: 1.5; }
+    .stButton>button { width: 100%; border-radius: 12px; height: 3em; font-weight: 600; }
     </style>
 """, unsafe_allow_html=True)
 
-# --- 2. 核心逻辑：数据管理 ---
-def get_daily_content():
-    """读取本地缓存，如果没有则返回默认高质量内容"""
-    cache_path = 'data/lessons.json'
-    
-    # 默认题库 (基于 BytePlus 官网最新内容)
-    default_lessons = [
-        {
-            "word": "Temporal Consistency",
-            "tag": "Video Generation (Veo)",
-            "def": "The ability to maintain stable objects and backgrounds across video frames.",
-            "example": "BytePlus Veo ensures temporal consistency in long-sequence generation.",
-            "quiz": "Which term describes stable backgrounds in AI video?"
-        },
-        {
-            "word": "Multimodal Translation",
-            "tag": "AI Intelligence",
-            "def": "The process of translating content across different types of media like text, audio, and video.",
-            "example": "Our platform supports multimodal translation for global content delivery.",
-            "quiz": "Translation involving multiple media types is called ______."
-        }
-    ]
-    
-    # 如果有自动化脚本抓取的本地文件，优先读取
-    if os.path.exists(cache_path):
-        with open(cache_path, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return default_lessons
+# --- 3. 动态数据抓取逻辑 ---
+@st.cache_data(ttl=3600) # 每小时自动刷新一次缓存
+def load_data():
+    try:
+        response = requests.get(GITHUB_RAW_URL, timeout=5)
+        if response.status_code == 200:
+            return response.json()
+    except:
+        pass
+    # 彻底无法联网时的保底内容
+    return [{
+        "word": "Real-time Communication",
+        "tag": "BytePlus RTC",
+        "def": "A technology that allows for instantaneous exchange of information.",
+        "example": "BytePlus RTC powers global video conferencing with ultra-low latency.",
+        "quiz": "What does RTC stand for?"
+    }]
 
-# --- 3. App 渲染层 ---
-# 获取内容并根据日期轮换
-all_lessons = get_daily_content()
-day_index = datetime.now().day % len(all_lessons)
-today = all_lessons[day_index]
+# --- 4. 页面渲染 ---
+data = load_data()
+# 根据日期自动轮换课程
+today_idx = datetime.now().day % len(data)
+item = data[today_idx]
 
-# 顶部导航
-st.write(f"📅 {datetime.now().strftime('%A, %b %d')}")
-st.title("ByteStep AI")
-st.caption(f"Willbazinga's Tech Growth Hub")
+st.write(f"👋 **Hello, willbazinga!**")
+st.caption(f"Today is {datetime.now().strftime('%Y-%m-%d')}")
 
-# 核心卡片渲染
 st.markdown(f"""
-<div class="tech-card">
-    <div class="category-tag">● {today['tag']}</div>
-    <div class="main-word">{today['word']}</div>
-    <p class="definition">{today['def']}</p>
-    <div style="background: #F1F5F9; padding: 15px; border-radius: 12px; border-left: 4px solid #CBD5E1;">
-        <p style="margin:0; font-style: italic; color: #64748B;">"{today['example']}"</p>
+<div class="main-card">
+    <div class="tag">● {item.get('tag', 'BytePlus Tech')}</div>
+    <div class="word">{item['word']}</div>
+    <p class="def">{item['def']}</p>
+    <div style="background:#F1F5F9; padding:12px; border-radius:10px; font-style:italic; color:#64748B;">
+        "{item['example']}"
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# 互动操作
+st.write("") # 间距
+
 col1, col2 = st.columns(2)
 with col1:
     if st.button("🔈 Pronunciation"):
-        st.info("Simulating BytePlus Seed Speech...")
-        # 后续可接入真实 API：st.audio(api_call(today['word']))
-
+        st.info("Seed Speech API Active")
 with col2:
     if st.button("💡 Show Answer"):
-        st.toast(f"Quiz Hint: {today['word']}")
+        st.success(f"Key: {item['word']}")
 
-# 练习区
-st.subheader("Interactive Challenge")
-user_input = st.text_input("Type the sentence above to practice:")
-if user_input.lower() == today['example'].lower().strip('"'):
+st.subheader("Interactive Practice")
+user_input = st.text_input("Quick Check: Type the key term below")
+if user_input.lower().strip() == item['word'].lower().strip():
     st.balloons()
-    st.success("Perfect Matching! Accuracy: 100%")
+    st.write("✅ Excellent! You've mastered this term.")
