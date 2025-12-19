@@ -1,0 +1,32 @@
+name: Daily BytePlus Update
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # 每天北京时间早上 8 点自动运行
+  workflow_dispatch: # 允许你手动点击运行
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
+
+      - name: Run Crawler
+        run: python crawler.py
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "willbazinga-bot"
+          git config --global user.email "bot@github.com"
+          git add data/lessons.json
+          git commit -m "Auto-update daily lesson" || exit 0
+          git push
