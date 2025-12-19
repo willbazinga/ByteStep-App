@@ -1,4 +1,4 @@
-name: Daily BytePlus Update
+name: Daily Update v2
 
 on:
   schedule:
