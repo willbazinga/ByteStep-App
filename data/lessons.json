@@ -1,20 +1,41 @@
 [
-  {
-    "date": "2025-12-19",
-    "vocabulary": [
-      {"word": "Scalability", "def": "The ability of a system to handle a growing amount of work."},
-      {"word": "Latency", "def": "The time delay between a cause and the effect."},
-      {"word": "Throughput", "def": "The amount of data moved successfully across a network."},
-      {"word": "Availability", "def": "The proportion of time a system is functional and working."},
-      {"word": "Bandwidth", "def": "The maximum rate of data transfer across a given path."}
-    ],
-    "grammar": [
-      {"rule": "Passive Voice", "note": "Use 'be + past participle'. Common in tech docs: 'Data is encrypted...'"},
-      {"rule": "Imperative Mood", "note": "Used for instructions. Example: 'Run the script to deploy...'"}
-    ],
-    "tech_spotlight": {
-      "title": "Edge Computing",
-      "detail": "Processing data closer to the source to reduce latency, crucial for BytePlus RTC services."
+    {
+        "date": "2025-12-19",
+        "vocabulary": [
+            {
+                "word": "Scalability",
+                "def": "The ability of a system to handle a growing amount of work."
+            },
+            {
+                "word": "Latency",
+                "def": "The time delay between a cause and the effect."
+            },
+            {
+                "word": "Throughput",
+                "def": "The amount of data moved successfully across a network."
+            },
+            {
+                "word": "Availability",
+                "def": "The proportion of time a system is functional and working."
+            },
+            {
+                "word": "Bandwidth",
+                "def": "The maximum rate of data transfer across a given path."
+            }
+        ],
+        "grammar": [
+            {
+                "rule": "Passive Voice",
+                "note": "Use 'be + past participle'. Common in tech docs: 'Data is encrypted...'"
+            },
+            {
+                "rule": "Imperative Mood",
+                "note": "Used for instructions. Example: 'Run the script to deploy...'"
+            }
+        ],
+        "tech_spotlight": {
+            "title": "Edge Computing",
+            "detail": "Processing data closer to the source to reduce latency, crucial for BytePlus RTC services."
+        }
     }
-  }
 ]
