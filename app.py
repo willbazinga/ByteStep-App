@@ -8,45 +8,41 @@ GITHUB_ID = "willbazinga"
 REPO_NAME = "ByteStep-App"
 RAW_URL = f"https://raw.githubusercontent.com/{GITHUB_ID}/{REPO_NAME}/main/data/lessons.json?t={int(time.time())}"
 
-st.set_page_config(page_title="ByteStep Pro 2.0", page_icon="🚀")
+st.set_page_config(page_title="ByteStep Pro 2.1", page_icon="🚀")
 
-# --- 2. 核心语音 JS 逻辑（带解锁功能） ---
+# --- 2. 核心语音逻辑（极简直连版） ---
 st.markdown("""
     <script>
-    // 全局语音函数
-    window.speakText = function(text) {
-        window.speechSynthesis.cancel(); 
-        const msg = new SpeechSynthesisUtterance(text);
-        msg.lang = 'en-US';
-        msg.rate = 0.9;
-        window.speechSynthesis.speak(msg);
-    };
-
-    // 音频锁激活函数
-    window.unlockAudio = function() {
-        const msg = new SpeechSynthesisUtterance('Voice active');
-        msg.volume = 0; // 静音播放一次用于解锁
-        window.speechSynthesis.speak(msg);
-        alert('Voice Lab Unlocked! Now you can click the speaker icons.');
+    // 只有一个函数，负责激活并播放
+    window.quickSpeak = function(text) {
+        // 1. 立即停止任何正在进行的朗读
+        window.speechSynthesis.cancel();
+        
+        // 2. 创建朗读对象
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        
+        // 3. 核心技巧：iOS 有时需要一个微小的延迟来处理音频队列
+        setTimeout(() => {
+            window.speechSynthesis.speak(utterance);
+        }, 10);
     };
     </script>
 """, unsafe_allow_html=True)
 
-# 样式美化
+# 样式
 st.markdown("""
     <style>
     .section-card { background: white; padding: 20px; border-radius: 15px; margin-bottom: 15px; border-left: 5px solid #0052cc; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
     .word-title { font-size: 22px; font-weight: 800; color: #1E293B; }
     .blur-text { filter: blur(6px); transition: filter 0.3s; cursor: pointer; }
     .blur-text:active { filter: blur(0); }
-    .audio-icon-btn {
-        background: #f1f5f9; border: none; border-radius: 50%; width: 42px; height: 42px;
-        cursor: pointer; font-size: 22px; display: flex; align-items: center; justify-content: center;
+    .audio-btn {
+        background: #0052cc; color: white; border: none; border-radius: 10px; 
+        padding: 5px 12px; font-size: 18px; cursor: pointer;
     }
-    .unlock-btn {
-        background: #0052cc; color: white; border: none; padding: 10px 20px;
-        border-radius: 10px; font-weight: bold; width: 100%; margin-bottom: 20px;
-    }
+    .audio-btn:active { background: #003d99; transform: scale(0.95); }
     </style>
 """, unsafe_allow_html=True)
 
@@ -62,11 +58,8 @@ data_list = load_data()
 
 if data_list:
     today_data = data_list[-1]
-    st.title("🚀 ByteStep Pro 2.0")
-    
-    # --- 新增：手动解锁音频按钮 ---
-    # 第一次进入页面必须点击这个
-    st.markdown('<button class="unlock-btn" onclick="window.unlockAudio()">点击解锁语音功能 (Unlock Voice)</button>', unsafe_allow_html=True)
+    st.title("🚀 ByteStep Pro 2.1")
+    st.caption(f"Willbazinga's Tech Lab | 北京时间: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
 
     tab1, tab2, tab3 = st.tabs(["🔤 Vocabulary", "📝 Grammar", "💻 Tech"])
 
@@ -78,12 +71,19 @@ if data_list:
             
             st.markdown(f"""
                 <div class="section-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                         <span class="word-title">{v['word']}</span>
-                        <button class="audio-icon-btn" onclick="window.speakText('{safe_text}')">🔊</button>
+                        <button class="audio-btn" onclick="window.quickSpeak('{safe_text}')">🔊 朗读 (Speak)</button>
                     </div>
-                    <div style="color:#475569; margin-top:8px;">{display_def}</div>
+                    <div style="color:#475569;">{display_def}</div>
                 </div>
             """, unsafe_allow_html=True)
 
-    # ... 后续卡片逻辑保持不变
+    with tab2:
+        for g in today_data['grammar']:
+            st.markdown(f'<div class="section-card"><b style="color:#0052cc;">{g["rule"]}</b><br>{g["note"]}</div>', unsafe_allow_html=True)
+
+    with tab3:
+        t = today_data['tech_spotlight']
+        st.markdown(f'<div class="section-card" style="border-left-color:#f97316;"><b style="font-size:20px;">{t["title"]}</b><p>{t["detail"]}</p></div>', unsafe_allow_html=True)
+        if st.button("Complete Today"): st.balloons()
