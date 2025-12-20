@@ -1,26 +1,33 @@
-name: ByteStep_Final_Fix
+name: Daily AI Lesson Update
 
 on:
-  workflow_dispatch: 
+  schedule:
+    - cron: '0 20 * * *' # 北京时间凌晨4点运行
+  workflow_dispatch: # 允许你手动点击运行测试
 
 jobs:
-  run_sync:
+  update-lesson:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
-      - name: Install
-        run: pip install requests beautifulsoup4
-      - name: Fetch Data
-        run: python crawler.py
-      - name: Push
+          
+      - name: Install dependencies
+        run: pip install requests
+        
+      - name: Run Generator
+        env:
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+        run: python scripts/generate_lesson.py
+        
+      - name: Commit and Push
         run: |
-          git config --global user.name "bot"
-          git config --global user.email "bot@github.com"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
           git add data/lessons.json
-          git commit -m "update" || exit 0
-          git push origin main --force
+          git commit -m "Auto-update lesson: $(date +'%Y-%m-%d')" || exit 0
+          git push
