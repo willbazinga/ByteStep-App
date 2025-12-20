@@ -8,36 +8,17 @@ GITHUB_ID = "willbazinga"
 REPO_NAME = "ByteStep-App"
 RAW_URL = f"https://raw.githubusercontent.com/{GITHUB_ID}/{REPO_NAME}/main/data/lessons.json?t={int(time.time())}"
 
-st.set_page_config(page_title="ByteStep Pro 2.3", page_icon="🚀")
+st.set_page_config(page_title="ByteStep Pro 2.4", page_icon="🚀")
 
-# --- 2. 极其精简且强健的 JS 逻辑 ---
-st.markdown("""
-    <script>
-    window.playWord = function(word, definition) {
-        // 核心：每次点击都重新获取合成器实例，确保激活
-        const synth = window.speechSynthesis;
-        synth.cancel(); 
-        const text = word + ". " + definition;
-        const utter = new SpeechSynthesisUtterance(text);
-        utter.lang = 'en-US';
-        utter.rate = 0.85;
-        synth.speak(utter);
-    };
-    </script>
-""", unsafe_allow_html=True)
-
-# 样式美化
+# --- 2. 样式美化 ---
 st.markdown("""
     <style>
-    .section-card { 
-        background: white; padding: 20px; border-radius: 15px; margin-bottom: 15px; 
-        border-left: 5px solid #0052cc; box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
-        cursor: pointer; transition: transform 0.1s;
-    }
-    .section-card:active { transform: scale(0.98); background: #f8fafc; }
-    .word-title { font-size: 22px; font-weight: 800; color: #1E293B; }
-    .blur-text { filter: blur(6px); transition: filter 0.3s; }
-    .hint-text { font-size: 12px; color: #94a3b8; margin-top: 5px; }
+    .section-card { background: white; padding: 20px; border-radius: 15px; margin-bottom: 15px; border-left: 5px solid #0052cc; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .word-title { font-size: 20px; font-weight: 800; color: #1E293B; }
+    .blur-text { filter: blur(6px); transition: filter 0.3s; cursor: pointer; }
+    .blur-text:active { filter: blur(0); }
+    .scenario-box { background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px dashed #cbd5e1; font-family: monospace; }
+    .speaker { color: #0052cc; font-weight: bold; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -53,28 +34,20 @@ data_list = load_data()
 
 if data_list:
     today_data = data_list[-1]
-    st.title("🚀 ByteStep Pro 2.3")
-    
-    tab1, tab2, tab3 = st.tabs(["🔤 Vocabulary", "📝 Grammar", "💻 Tech"])
+    st.title("🚀 ByteStep Pro 2.4")
+    st.caption(f"Willbazinga's Tech Lab | {datetime.now().strftime('%m-%d %H:%M')}")
+
+    # 修改后的三个 Tab
+    tab1, tab2, tab3 = st.tabs(["🔤 Vocabulary", "📝 Grammar", "💬 Scenario"])
 
     with tab1:
-        st.info("💡 提示：点击下方的单词卡片，即可听到发音！")
         quiz_mode = st.toggle("Memory Challenge (Blur Mode)", value=False)
-        
-        for i, v in enumerate(today_data['vocabulary']):
-            safe_word = v['word'].replace("'", "\\'")
-            safe_def = v['def'].replace("'", "\\'")
+        for v in today_data['vocabulary']:
             display_def = f'<span class="blur-text">{v["def"]}</span>' if quiz_mode else v["def"]
-            
-            # 直接将 onclick 绑定到整个卡片上，用户体验最丝滑
             st.markdown(f"""
-                <div class="section-card" onclick="window.playWord('{safe_word}', '{safe_def}')">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span class="word-title">{v['word']}</span>
-                        <span style="font-size: 20px;">🔊</span>
-                    </div>
+                <div class="section-card">
+                    <div class="word-title">{v['word']}</div>
                     <div style="color:#475569; margin-top:8px;">{display_def}</div>
-                    <div class="hint-text">Click to listen</div>
                 </div>
             """, unsafe_allow_html=True)
 
@@ -83,6 +56,24 @@ if data_list:
             st.markdown(f'<div class="section-card"><b style="color:#0052cc;">{g["rule"]}</b><br>{g["note"]}</div>', unsafe_allow_html=True)
 
     with tab3:
-        t = today_data['tech_spotlight']
-        st.markdown(f'<div class="section-card" style="border-left-color:#f97316;"><b>{t["title"]}</b><p>{t["detail"]}</p></div>', unsafe_allow_html=True)
-        if st.button("Complete Today"): st.balloons()
+        st.subheader("💻 Today's Tech Dialogue")
+        # 模拟真实的职场对话场景，将当天的词汇串联起来
+        # 注意：未来的版本我们可以让爬虫自动生成这段 JSON 内容
+        words = [v['word'] for v in today_data['vocabulary']]
+        
+        st.info("看看今天学习的词汇如何应用在【架构评审会议】中：")
+        
+        st.markdown(f"""
+        <div class="scenario-box">
+            <p><span class="speaker">Senior Architect:</span> "We need to ensure the <b>{words[0]}</b> of our new service. If the <b>{words[1]}</b> is too high, users will complain."</p>
+            <p><span class="speaker">Willbazinga:</span> "I agree. We should also monitor the <b>{words[2]}</b> to make sure we can handle 10k requests per second."</p>
+            <p><span class="speaker">Senior Architect:</span> "Good point. What about <b>{words[3]}</b>?"</p>
+            <p><span class="speaker">Willbazinga:</span> "We'll use multi-region deployment to keep it at 99.99%."</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if st.button("Complete & Celebrate"):
+            st.balloons()
+
+else:
+    st.info("Syncing data from GitHub...")
