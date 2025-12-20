@@ -1,41 +1,98 @@
 [
-    {
-        "date": "2025-12-19",
-        "vocabulary": [
-            {
-                "word": "Scalability",
-                "def": "The ability of a system to handle a growing amount of work."
-            },
-            {
-                "word": "Latency",
-                "def": "The time delay between a cause and the effect."
-            },
-            {
-                "word": "Throughput",
-                "def": "The amount of data moved successfully across a network."
-            },
-            {
-                "word": "Availability",
-                "def": "The proportion of time a system is functional and working."
-            },
-            {
-                "word": "Bandwidth",
-                "def": "The maximum rate of data transfer across a given path."
-            }
-        ],
-        "grammar": [
-            {
-                "rule": "Passive Voice",
-                "note": "Use 'be + past participle'. Common in tech docs: 'Data is encrypted...'"
-            },
-            {
-                "rule": "Imperative Mood",
-                "note": "Used for instructions. Example: 'Run the script to deploy...'"
-            }
-        ],
-        "tech_spotlight": {
-            "title": "Edge Computing",
-            "detail": "Processing data closer to the source to reduce latency, crucial for BytePlus RTC services."
-        }
+  {
+    "date": "2025-12-19",
+    "vocabulary": [
+      {
+        "word": "Scalability",
+        "def": "The ability of a system to handle a growing amount of work."
+      },
+      {
+        "word": "Latency",
+        "def": "The time delay between a cause and the effect."
+      },
+      {
+        "word": "Throughput",
+        "def": "The amount of data moved successfully across a network."
+      },
+      {
+        "word": "Availability",
+        "def": "The proportion of time a system is functional and working."
+      },
+      {
+        "word": "Bandwidth",
+        "def": "The maximum rate of data transfer across a given path."
+      }
+    ],
+    "grammar": [
+      {
+        "rule": "Passive Voice",
+        "note": "Use 'be + past participle'. Common in tech docs: 'Data is encrypted...'"
+      },
+      {
+        "rule": "Imperative Mood",
+        "note": "Used for instructions. Example: 'Run the script to deploy...'"
+      }
+    ],
+    "tech_spotlight": {
+      "title": "Edge Computing",
+      "detail": "Processing data closer to the source to reduce latency, crucial for BytePlus RTC services."
     }
+  },
+  {
+    "date": "2025-12-20",
+    "vocabulary": [
+      {
+        "word": "latency",
+        "def": "The delay before a transfer of data begins following an instruction for its transfer, often measured in milliseconds."
+      },
+      {
+        "word": "scalability",
+        "def": "The capability of a system, network, or process to handle a growing amount of work, or its potential to be enlarged to accommodate that growth."
+      },
+      {
+        "word": "idempotent",
+        "def": "A property of certain operations whereby they can be applied multiple times without changing the result beyond the initial application."
+      },
+      {
+        "word": "cache",
+        "def": "A hardware or software component that stores data so that future requests for that data can be served faster."
+      },
+      {
+        "word": "asynchronous",
+        "def": "Occurring at different times; not synchronized, often referring to operations that do not block the execution of other tasks."
+      }
+    ],
+    "grammar": [
+      {
+        "rule": "Present Perfect Tense",
+        "note": "Use 'has/have + past participle' to describe actions that started in the past and continue to the present, or have relevance to the present. Example: 'We have implemented caching to reduce latency.'"
+      },
+      {
+        "rule": "Conditional Sentences (Type 1)",
+        "note": "Use 'if + present simple, will + base verb' to talk about real and possible situations in the future. Example: 'If we improve scalability, the system will handle more users.'"
+      }
+    ],
+    "tech_spotlight": {
+      "title": "Microservices Architecture",
+      "detail": "Microservices architecture is an approach where a single application is composed of many loosely coupled and independently deployable smaller services. Each service runs a unique process and communicates through a well-defined, lightweight mechanism to serve a business goal."
+    },
+    "scenario_dialogue": [
+      {
+        "speaker": "Senior Dev",
+        "text": "We need to reduce the latency in our API responses. Have you considered implementing a cache?"
+      },
+      {
+        "speaker": "Willbazinga",
+        "text": "Yes, I've been looking into caching strategies. I think an asynchronous caching layer could help improve scalability."
+      },
+      {
+        "speaker": "Senior Dev",
+        "text": "Good idea. Also, ensure the cache operations are idempotent to avoid side effects on repeated requests."
+      },
+      {
+        "speaker": "Willbazinga",
+        "text": "Understood. I'll design the cache to be idempotent and test it with various load scenarios to ensure it handles asynchronous calls efficiently."
+      }
+    ]
+  }
 ]
